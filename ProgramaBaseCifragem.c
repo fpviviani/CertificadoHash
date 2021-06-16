@@ -8,20 +8,37 @@
 #include <stdlib.h>
 
 #define TAM 9
-#define SYMBOLS 256
 
 typedef unsigned char byte;
 
 void Cifra(byte *bloco,char *chave, int itens)
 {
   int i;
-  for(i=0; i<itens; i++) 
+  for(i=0; i<itens; i++)
   {
     if (i%2 == 0)
-       bloco[i] = (bloco[i] >> 1) + (chave[i] << 1);
+      bloco[i] = (bloco[i] >> 1) + (chave[i] << 1);
     else
-        bloco[i] = (bloco[i] << 1) + (chave[i] >> 1);
-    //printf("[%d] %3d\n", i, bloco[i]);
+      bloco[i] = (bloco[i] << 1) + (chave[i] >> 1);
+    // printf("[%d] %3d\n\n", i, bloco[i]);
+  }
+}
+
+void CifraReversa(byte *bloco,char *chave, int itens)
+{
+  int i;
+  byte auxByte;
+
+  for(i=0; i<itens; i++)
+  {
+    if (i%2 == 0) {
+      auxByte = bloco[i] - (chave[i] << 1);
+      bloco[i] = auxByte << 1;
+    } else {
+      auxByte = bloco[i] - (chave[i] >> 1);
+      bloco[i] = auxByte >> 1;
+    }
+    // printf("[%d] %3d\n\n", i, bloco[i]);
   }
 }
 
@@ -38,22 +55,22 @@ int main()
   scanf("%s",NomeArquivoSaida);
   printf("Entre com uma senha de 8 digitos = ");
   scanf("%s",ChaveCifragem);
-  
+
   ArquivoEntrada  = fopen(NomeArquivoEntrada,"rb");
   ArquivoSaida = fopen(NomeArquivoSaida,"wb");
-  do 
+  do
   {
     Itens = fread(BlocoDados,1,TAM,ArquivoEntrada);
-    if(Itens!=0) 
+    if(Itens!=0)
     {
-      Cifra(BlocoDados,ChaveCifragem, Itens);
+      // Cifra(BlocoDados,ChaveCifragem, Itens);
+      CifraReversa(BlocoDados,ChaveCifragem, Itens);
       fwrite(BlocoDados,Itens,1,ArquivoSaida);
     }
   } while(!feof(ArquivoEntrada));
 
     fclose(ArquivoSaida);
     fclose(ArquivoEntrada);
-    
+
     return 0;
 }
-

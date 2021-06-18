@@ -6,68 +6,62 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "ProgramaBaseDecifragem.c"
+#include "sha256.c"
 
 #define TAM 9
 
 typedef unsigned char byte;
 
-void Cifra(byte *bloco,char *chave, int itens)
+void Cifra(byte *bloco, char *chave, int itens)
 {
-  int i;
-  for(i=0; i<itens; i++)
-  {
-    if (i%2 == 0)
-      bloco[i] = (bloco[i] >> 1) + (chave[i] << 1);
-    else
-      bloco[i] = (bloco[i] << 1) + (chave[i] >> 1);
-    // printf("[%d] %3d\n\n", i, bloco[i]);
-  }
+    int i;
+    for(i=0; i<itens; i++)
+    {
+        if (i%2 == 0)
+            bloco[i] = (bloco[i] >> 1) + (chave[i] << 1);
+        else
+            bloco[i] = (bloco[i] << 1) + (chave[i] >> 1);
+    }
 }
 
-void CifraReversa(byte *bloco,char *chave, int itens)
+void Hash(byte *bloco)
 {
-  int i;
-  byte auxByte;
-
-  for(i=0; i<itens; i++)
-  {
-    if (i%2 == 0) {
-      auxByte = bloco[i] - (chave[i] << 1);
-      bloco[i] = auxByte << 1;
-    } else {
-      auxByte = bloco[i] - (chave[i] >> 1);
-      bloco[i] = auxByte >> 1;
-    }
-    // printf("[%d] %3d\n\n", i, bloco[i]);
-  }
+    char hashKey[32];
+    SHA256_CTX ctx;
+    sha256_init(&ctx);
+    sha256_update(&ctx, bloco, strlen(bloco));
+    sha256_final(&ctx, hashKey);
+    printf("%s", hashKey);
 }
 
 int main()
 {
-  char BlocoDados[TAM], ChaveCifragem[TAM];
-  FILE *ArquivoEntrada,*ArquivoSaida;
-  char NomeArquivoEntrada[30], NomeArquivoSaida[30];
-  int  Itens;
+    char BlocoDados[TAM], ChaveCifragem[TAM];
+    FILE *ArquivoEntrada, *ArquivoSaida;
+    char NomeArquivoEntrada[30], NomeArquivoSaida[30];
+    int  Itens;
 
-  printf("Entre com o Nome do Arquivo Original = ");
-  scanf("%s",NomeArquivoEntrada);
-  printf("Entre com o Nome do Arquivo para Cifragem = ");
-  scanf("%s",NomeArquivoSaida);
-  printf("Entre com uma senha de 8 digitos = ");
-  scanf("%s",ChaveCifragem);
+    printf("Entre com o Nome do Arquivo Original = ");
+    scanf("%s", NomeArquivoEntrada);
+    printf("Entre com o Nome do Arquivo para Cifragem = ");
+    scanf("%s", NomeArquivoSaida);
+    printf("Entre com uma senha de 8 digitos = ");
+    scanf("%s", ChaveCifragem);
 
-  ArquivoEntrada  = fopen(NomeArquivoEntrada,"rb");
-  ArquivoSaida = fopen(NomeArquivoSaida,"wb");
-  do
-  {
-    Itens = fread(BlocoDados,1,TAM,ArquivoEntrada);
-    if(Itens!=0)
+    ArquivoEntrada = fopen(NomeArquivoEntrada,"rb");
+    ArquivoSaida = fopen(NomeArquivoSaida,"wb");
+    do
     {
-      // Cifra(BlocoDados,ChaveCifragem, Itens);
-      CifraReversa(BlocoDados,ChaveCifragem, Itens);
-      fwrite(BlocoDados,Itens,1,ArquivoSaida);
-    }
-  } while(!feof(ArquivoEntrada));
+        Itens = fread(BlocoDados, 1, TAM, ArquivoEntrada);
+        if(Itens!=0)
+        {
+            Cifra(BlocoDados, ChaveCifragem, Itens);
+            Hash(BlocoDados);
+            Decifra(BlocoDados, ChaveCifragem, Itens);
+            fwrite(BlocoDados, Itens, 1, ArquivoSaida);
+        }
+    } while(!feof(ArquivoEntrada));
 
     fclose(ArquivoSaida);
     fclose(ArquivoEntrada);

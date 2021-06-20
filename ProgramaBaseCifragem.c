@@ -25,19 +25,18 @@ void Cifra(byte *bloco, char *chave, int itens)
     }
 }
 
-void Hash(byte *chave)
+void Hash(char *chave, char *ChaveHash)
 {
-    char hashKey[32];
     SHA256_CTX ctx;
     sha256_init(&ctx);
     sha256_update(&ctx, chave, strlen(chave));
-    sha256_final(&ctx, hashKey);
-    printf("%s", hashKey);
+    sha256_final(&ctx, ChaveHash);
+    printf("%s", ChaveHash);
 }
 
 int main()
 {
-    char BlocoDados[TAM], ChaveCifragem[TAM];
+    char BlocoDados[TAM], ChaveCifragem[TAM], HashKey[32];
     FILE *ArquivoEntrada, *ArquivoSaida;
     char NomeArquivoEntrada[30], NomeArquivoSaida[30];
     int  Itens;
@@ -57,7 +56,7 @@ int main()
         if(Itens!=0)
         {
             Cifra(BlocoDados, ChaveCifragem, Itens);
-            Hash(ChaveCifragem);
+            Hash(ChaveCifragem, HashKey);
             Decifra(BlocoDados, ChaveCifragem, Itens);
             fwrite(BlocoDados, Itens, 1, ArquivoSaida);
         }

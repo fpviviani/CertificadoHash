@@ -1,3 +1,7 @@
+Desenvolvido em dupla, como acordado com o professor, por:
+    Fábio Piovani Viviani - 2017006774
+    José Francisco do Nascimento - 2016012623
+
 Para o arquivo de Remetente, crie um arquivo `entrada.txt` com uma mensagem de até 100 caracteres, numa única linha. Compile rodando `gcc Remetente.c -o remetente` e rode com `./remetente`. Deverá ser gerado um arquivo `saida.txt`.
 
 Para o arquivo de Destinatario, compile rodando `gcc Destinatario.c -o destinatario` e rode com `./destinatario`. Ela deve informar se a mensagem está autenticada ou não. Note que, nessa implementação de decifragem, não houve correção da troca de bits em posições ímpares, então ela não retornará de forma correta.
